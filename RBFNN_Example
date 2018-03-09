@@ -1,0 +1,60 @@
+'''
+A Neural Net that has only one hidden layer with the number of nodes equal to the number of inputs with radial basis functions, 
+is a local linear radial basis function neural network. [ref]
+'''
+
+# libraries
+from keras.models import Sequential
+from keras.layers import Dense
+from keras import losses
+from keras import optimizers
+from keras import metrics
+import keras.backend as K
+import numpy
+
+# import an example dataset from sklearn
+from sklearn.datasets import load_diabetes
+
+# load_diabetes is a dictionary, and the data is stored there.
+data = load_diabetes()
+
+# get the inputs, targets and the classes of every input
+inputs = data['data']
+feature_names = data['feature_names']
+targets = data['target']
+
+# a command to split your data into train dataset, and test dataset.
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(inputs, targets, test_size=0.33, random_state=42)
+
+# define the RBF
+def gaussian_vanilla_rbf(x):
+    return K.exp(-K.pow(x,2))
+
+# create de model for the neural network:
+model = Sequential()
+'''
+The first argument of the function "Dense", is the number of nodes (neurons) in the hidden layer.
+The activation argument, is what defines which activation function will have the hidden layer.
+the input_dim argument is the number of nodes in the input layer
+'''
+model.add(Dense(10, input_dim=10, activation=gaussian_vanilla_rbf)) 
+# The Radial basis activation function is what gives the NN the Radial basis function neural network property.
+
+model.add(Dense(1, activation='linear')) # linear activation function in the output layer because of the lols.
+
+model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
+model.fit(X_train, y_train, epochs=150, batch_size=1, verbose=1)
+
+score_train = model.evaluate(X_train, y_train,verbose=1)
+print('training score: ' +str(score_train)) 
+
+score_train = model.evaluate(X_test, y_test,verbose=1)
+print('training score: ' +str(score_test))
+
+
+
+
+
+
+
